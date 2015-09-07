@@ -266,13 +266,25 @@ public abstract class BasePosixProcess implements NuProcess
                if (WIFEXITED(status)) {
                   status = WEXITSTATUS(status);
                   if (status == 127) {
-                     onExit(Integer.MIN_VALUE);
+                     throw new RuntimeException("Invocation of posix_spawn() failed");
                   }
                   else {
+                     afterStart();
+
+                     registerProcess();
+
+                     callStart();
+
                      onExit(status);
                   }
                }
                else if (WIFSIGNALED(status)) {
+                  afterStart();
+
+                  registerProcess();
+
+                  callStart();
+
                   onExit(WTERMSIG(status));
                }
 
